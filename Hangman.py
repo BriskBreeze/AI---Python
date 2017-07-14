@@ -44,8 +44,7 @@ def draw_word(word, guessed): # displays the word and blank underneath the gallo
             print("_", end = " ") # if you didn't finish the word, set finished to False
             finished = False
     if finished:
-        print()
-        print("You Win!") # win message
+        print("\nYou Win!") # win message
         exit(0)
     print()
 
@@ -75,22 +74,31 @@ def AI_move(guessed, word, letter_count): # gets result form the AI
     sorted_dict = sorted(letter_count.items(), key=lambda x:x[1])[::-1]
     return sorted_dict[len(guessed)][0]
 
-def AI_train(training_set): # trains the AI
-    letter_cnt = {} # empty dict
+def AI_train(training_set, gramsize): # trains the AI
+    ngram_cnt = {} # empty dict
     for word in training_set:
-        for letter in word:
-            if letter in letter_cnt: # count each letter in the training set and if its a new alphabet, create a new key
-                letter_cnt[letter] += 1
-            else:
-                letter_cnt[letter] = 1
-    return letter_cnt
+        for i in xrange(len(word) - gramsize):
+            ngram = ""
+            for j in xrange(gramsize):
+                ngram += word[i+j]
+        if ngram in ngram_cnt:
+            ngram_cnt[ngram] += 1
+        else:
+            ngram_cnt[ngram] = 1
 
-def retrain(training_set, guess): # filters out words of the training data to make a better guess
+        """for letter in word:
+            if letter in ngram_cnt: # count each letter in the training set and if its a new alphabet, create a new key
+                ngram_cnt[letter] += 1
+            else:
+                ngram_cnt[letter] = 1"""
+
+    return ngram_cnt
+
+def filter(training_set, guess): # filters out words of the training data to make a better guess
     for word in training_set:
         if guess in word:
             training_set.remove(word) # removes words with letter of wrong guess
     AI_train(training_set)
-
 
 f = open("E:\Programming\Projects\Python 2.7.13\DukeTiP\words_alpha.txt") # dir for the word dictionary
 words = f.read().splitlines() # splits the file into words and loads them into a list
@@ -103,16 +111,16 @@ for i in xrange(1):
     word = words[0]
 
     training_set = words[::10]  # gets every tenth word
-    letter_count = AI_train(training_set)
-
+    ngram_count = AI_train(training_set, 1)
+    print(ngram_count)
     while stage < 6:  # you get 6 lives
         display(stage, word, guessed)
         # guess = player_move(guessed) # user guess
-        guess = AI_move(guessed, word, letter_count)  # AI guess
+        guess = AI_move(guessed, word, ngram_count)  # AI guess
         guessed.append(guess)  # adds guess to guess list
         if guess not in word:  # if wrong, go up in stage
             stage += 1
-            #retrain(training_set, guess)
+            #filter(training_set, guess)
 
     display(stage, word, guessed)  # refreshes the screen
     print("Game Over!")  # game over message
