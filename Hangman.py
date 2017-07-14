@@ -85,27 +85,35 @@ def AI_train(training_set): # trains the AI
                 letter_cnt[letter] = 1
     return letter_cnt
 
-stage = 0 # full lives
-guessed = [] # empty guess list
+def retrain(training_set, guess): # filters out words of the training data to make a better guess
+    for word in training_set:
+        if guess in word:
+            training_set.remove(word) # removes words with letter of wrong guess
+    AI_train(training_set)
+
 
 f = open("E:\Programming\Projects\Python 2.7.13\DukeTiP\words_alpha.txt") # dir for the word dictionary
 words = f.read().splitlines() # splits the file into words and loads them into a list
 
-numpy.random.shuffle(words) # shuffles the list
-word = words[0] # sets word to first word in words
+for i in xrange(1):
+    numpy.random.shuffle(words)  # shuffles the list
+    # word = words[0] # sets word to first word in words
+    stage = 0  # full lives
+    guessed = []  # empty guess list
+    word = words[0]
 
-training_set = words[::10] # gets every tenth word
-letter_count = AI_train(training_set)
+    training_set = words[::10]  # gets every tenth word
+    letter_count = AI_train(training_set)
 
-while stage < 6: # you get 6 lives
-    display(stage, word, guessed)
-    #guess = player_move(guessed) # user guess
-    guess = AI_move(guessed, word, letter_count) # AI guess
-    print(guess)
-    guessed.append(guess) # adds guess to guess list
-    if guess not in word: # if wrong, go up in stage
-        stage+=1
+    while stage < 6:  # you get 6 lives
+        display(stage, word, guessed)
+        # guess = player_move(guessed) # user guess
+        guess = AI_move(guessed, word, letter_count)  # AI guess
+        guessed.append(guess)  # adds guess to guess list
+        if guess not in word:  # if wrong, go up in stage
+            stage += 1
+            #retrain(training_set, guess)
 
-display(stage, word, guessed) # refreshes the screen
-print("Game Over!") # game over message
-print("Your word was: " + word)
+    display(stage, word, guessed)  # refreshes the screen
+    print("Game Over!")  # game over message
+    print("Your word was: " + word)
