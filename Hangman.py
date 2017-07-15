@@ -51,7 +51,8 @@ def draw_word(word, guessed): # displays the word and blank underneath the gallo
 def draw_guessed(guessed): # displays guessed characters
     print("Guessed: ", end = "")
     for letter in guessed:
-        print(letter, end = "")
+        if len(letter) == 1:
+            print(letter, end = "")
     print()
 
 def change_letter(word, character, index): # replace letter in string given parent string, replacement char and an index
@@ -70,9 +71,69 @@ def player_move(guessed): # input from a human
         guess = raw_input("Guess a letter: ")[0].lower()
     return guess
 
-def AI_move(guessed, word, letter_count): # gets result form the AI
-    sorted_dict = sorted(letter_count.items(), key=lambda x:x[1])[::-1]
-    return sorted_dict[len(guessed)][0]
+def AI_move(lcl_guessed, word, ngram_count, training_set): # gets result form the AI
+    sorted_dict = sorted(ngram_count.items(), key=lambda x:x[1])[::-1]
+    print(sorted_dict)
+    if len(lcl_guessed) == 0 or len(word) == 1:
+        print(sorted(AI_train(training_set, 1))[0])
+        return sorted(AI_train(training_set, 1))[0]
+    left_letter = ""
+    right_letter = ""
+    for i in xrange(len(word)):
+        if word[i] not in lcl_guessed:
+            if i == 0:
+                if word[i+1] in lcl_guessed:
+                    right_letter = word[i+1]
+                else:
+                    continue
+            elif i == len(word)-1:
+                if word[i-1] in lcl_guessed:
+                    left_letter = word[i-1]
+                else:
+                    continue
+            else:
+                if word[i-1] in lcl_guessed:
+                    left_letter = word[i-1]
+                else:
+                    continue
+                if word[i + 1] in lcl_guessed:
+                    right_letter = word[i + 1]
+                else:
+                    continue
+
+    ngram1 = {}
+    ngram2 = {}
+    if not left_letter == "":
+        for ngram in sorted_dict:
+            if ngram[0][0] == left_letter and ngram not in lcl_guessed:
+                print(ngram)
+                print("Here1")
+                ngram1 = ngram
+                break
+    if not right_letter == "":
+        for ngram in sorted_dict:
+            if ngram[0][1] == right_letter and ngram not in lcl_guessed:
+                print(ngram)
+                print("Here2")
+                ngram2 = ngram
+                break
+
+    if not ngram1 == {} and not ngram2 == {}:
+        if ngram1[1] > ngram2[1]:
+            guessed.append(ngram1)
+            return ngram1[0][1]
+        else:
+            guessed.append(ngram2)
+            return  ngram2[0][0]
+    elif not ngram1 == {}:
+        guessed.append(ngram1)
+        return ngram1[0][1]
+    elif not ngram2 == {}:
+        guessed.append(ngram2)
+        return  ngram2[0][0]
+    else:
+        print("Here3")
+        return sorted_dict[len(lcl_guessed)][0][0]
 
 def AI_train(training_set, gramsize): # trains the AI
     ngram_cnt = {} # empty dict
@@ -94,14 +155,15 @@ def AI_train(training_set, gramsize): # trains the AI
 
     return ngram_cnt
 
-def filter(training_set, guess): # filters out words of the training data to make a better guess
-    for word in training_set:
-        if guess in word:
-            training_set.remove(word) # removes words with letter of wrong guess
-    AI_train(training_set)
+def filter(guess): # filters out words of the training data to make a better guess
+    temp = ngram_count.copy()
+    for key in temp:
+        if guess in key:
+            ngram_count.pop(key)
 
-f = open("E:\Programming\Projects\Python 2.7.13\DukeTiP\words_alpha.txt") # dir for the word dictionary
-words = f.read().splitlines() # splits the file into words and loads them into a list
+f = open("words_alpha.txt")
+#f = open("20k.txt")
+words = f.read().lower().splitlines() # splits the file into words and loads them into a list
 
 for i in xrange(1):
     numpy.random.shuffle(words)  # shuffles the list
@@ -111,16 +173,17 @@ for i in xrange(1):
     word = words[0]
 
     training_set = words[::10]  # gets every tenth word
-    ngram_count = AI_train(training_set, 1)
+    ngram_count = AI_train(training_set, 2)
     print(ngram_count)
     while stage < 6:  # you get 6 lives
         display(stage, word, guessed)
         # guess = player_move(guessed) # user guess
-        guess = AI_move(guessed, word, ngram_count)  # AI guess
-        guessed.append(guess)  # adds guess to guess list
-        if guess not in word:  # if wrong, go up in stage
+        guess = AI_move(guessed, word, ngram_count, training_set)  # AI guess
+        print(guess)
+        if guess not in word and guess not in guessed:  # if wrong, go up in stage
             stage += 1
-            #filter(training_set, guess)
+            filter(guess)
+        guessed.append(guess.lower())  # adds guess to guess list
 
     display(stage, word, guessed)  # refreshes the screen
     print("Game Over!")  # game over message
