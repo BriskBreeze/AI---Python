@@ -6,6 +6,9 @@ apiUrl = 'http://api.wordnik.com/v4'
 apiKey = 'YOUR API KEY HERE'
 client = swagger.ApiClient(apiKey, apiUrl)"""
 
+f = open("words_alpha.txt")
+#f = open("20k.txt")
+words = f.read().lower().splitlines() # splits the file into words and loads them into a list
 
 def draw_gallows(stage):
     gallows = [ # the template of the gallows
@@ -37,6 +40,7 @@ def draw_gallows(stage):
 
 def draw_word(word, guessed): # displays the word and blank underneath the gallows
     finished = True # default flag
+    winnum = 0
     for letter in word:
         if letter in guessed: # goes through each letter and checks to see if its in the guessed list.  if so, display letter, if not, an underscore
             print(letter, end = " ")
@@ -45,8 +49,9 @@ def draw_word(word, guessed): # displays the word and blank underneath the gallo
             finished = False
     if finished:
         print("\nYou Win!") # win message
-        exit(0)
+        winnum = 1
     print()
+    return winnum
 
 def draw_guessed(guessed): # displays guessed characters
     print("Guessed: ", end = "")
@@ -63,7 +68,7 @@ def change_letter(word, character, index): # replace letter in string given pare
 def display(stage, word, guessed): # runs all draw methods
     draw_guessed(guessed)
     draw_gallows(stage)
-    draw_word(word, guessed)
+    return draw_word(word, guessed)
 
 def player_move(guessed): # input from a human
     guess = ""
@@ -73,7 +78,6 @@ def player_move(guessed): # input from a human
 
 def AI_move(lcl_guessed, word, ngram_count, training_set): # gets result form the AI
     sorted_dict = sorted(ngram_count.items(), key=lambda x:x[1])[::-1]
-    print(sorted_dict)
     if len(lcl_guessed) == 0 or len(word) == 1:
         print(sorted(AI_train(training_set, 1))[0])
         return sorted(AI_train(training_set, 1))[0]
@@ -106,15 +110,11 @@ def AI_move(lcl_guessed, word, ngram_count, training_set): # gets result form th
     if not left_letter == "":
         for ngram in sorted_dict:
             if ngram[0][0] == left_letter and ngram not in lcl_guessed:
-                print(ngram)
-                print("Here1")
                 ngram1 = ngram
                 break
     if not right_letter == "":
         for ngram in sorted_dict:
             if ngram[0][1] == right_letter and ngram not in lcl_guessed:
-                print(ngram)
-                print("Here2")
                 ngram2 = ngram
                 break
 
@@ -132,7 +132,6 @@ def AI_move(lcl_guessed, word, ngram_count, training_set): # gets result form th
         guessed.append(ngram2)
         return  ngram2[0][0]
     else:
-        print("Here3")
         return sorted_dict[len(lcl_guessed)][0][0]
 
 def AI_train(training_set, gramsize): # trains the AI
@@ -161,11 +160,10 @@ def filter(guess): # filters out words of the training data to make a better gue
         if guess in key:
             ngram_count.pop(key)
 
-f = open("words_alpha.txt")
-#f = open("20k.txt")
-words = f.read().lower().splitlines() # splits the file into words and loads them into a list
+win = 0.0
+loss = 0.0
 
-for i in xrange(1):
+for i in xrange(100):
     numpy.random.shuffle(words)  # shuffles the list
     # word = words[0] # sets word to first word in words
     stage = 0  # full lives
@@ -174,17 +172,17 @@ for i in xrange(1):
 
     training_set = words[::10]  # gets every tenth word
     ngram_count = AI_train(training_set, 2)
-    print(ngram_count)
     while stage < 6:  # you get 6 lives
-        display(stage, word, guessed)
+        win += display(stage, word, guessed)  # refreshes the screen
         # guess = player_move(guessed) # user guess
         guess = AI_move(guessed, word, ngram_count, training_set)  # AI guess
-        print(guess)
         if guess not in word and guess not in guessed:  # if wrong, go up in stage
             stage += 1
             filter(guess)
         guessed.append(guess.lower())  # adds guess to guess list
 
-    display(stage, word, guessed)  # refreshes the screen
+    win += display(stage, word, guessed)  # refreshes the screen
     print("Game Over!")  # game over message
     print("Your word was: " + word)
+    loss+=1
+print(float(win) / ((float(loss) + float(win))))
