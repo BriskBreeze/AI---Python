@@ -42,10 +42,9 @@ def draw_word(word, guessed): # displays the word and blank underneath the gallo
     finished = True # default flag
     for letter in word:
         if letter in guessed: # goes through each letter and checks to see if its in the guessed list.  if so, display letter, if not, an underscore
-            pass
-            # print(letter, end = " ")
+            print(letter, end = " ")
         else:
-            #print("_", end = " ") # if you didn't finish the word, set finished to False
+            print("_", end = " ") # if you didn't finish the word, set finished to False
             finished = False
     if finished:
         print("You Win!") # win message
@@ -65,8 +64,8 @@ def change_letter(word, character, index): # replace letter in string given pare
     return ''.join(new_word)
 
 def display(stage, word, guessed): # runs all draw methods
-    # draw_guessed(guessed)
-    # draw_gallows(stage)
+    draw_guessed(guessed)
+    draw_gallows(stage)
     return draw_word(word, guessed)
 
 def player_move(guessed): # input from a human
