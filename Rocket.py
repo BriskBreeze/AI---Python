@@ -2,12 +2,12 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt # conda install matplotlib
 
-def get_data(_step):
-    angles = range(-40, 81, _step) # gets list of angles
-    distance = [65.3333, 99.6666, 130.0, 175.3333, 383.6666, 446.3333, 642.6666, 716.6666, 717.6666, 706.3333, 626.0, 636.3333, 365.3333, 31.6666][::_step / 10] # gets list of distances given angle freq
+def get_training_data(_distance):
+    angles = range(-40, 81, 20) # gets list of angles
+    dist = _distance[::2] # gets list of distances given angle freq
     data = [] # empty list for data points
     data.append(angles) # adds angles
-    data.append(distance) # adds distances
+    data.append(dist) # adds distances
     return data
 
 def get_distance(_angle, _data):
@@ -31,9 +31,34 @@ def get_input():
             else: # default message
                 print("I'm sorry, you have entered an invalid angle.")
 
+def MAE(_test_set):
+    n = len(_test_set)
+    sum = 0.0
+    for i in xrange(n):
+        sum += AE(_test_set[0][i], _test_set[1][i])
+    #print(sum)
+    return sum / n
 
-data = get_data(20) # loads data
+def MSE(_test_set):
+    n = len(_test_set)
+    sum = 0.0
+    for i in xrange(n):
+        sum += AE(_test_set[0][i], _test_set[1][i]) ** 2
+    return sum / n
+
+def RMSD(_test_set):
+    return MSE(_test_set) ** 1/2
+
+def AE(_n1, _n2):
+    return abs(_n1 - _n2)
+
+test_set = [[100.0, 98.0, 4.0, 3.0], [100.0, 100.0, 0.0, 5.0]]
+print(MAE(test_set))
+
+distance = [65.3333, 99.6666, 130.0, 175.3333, 383.6666, 446.3333, 642.6666, 716.6666, 717.6666, 706.3333, 626.0, 636.3333, 365.3333, 31.6666]
+data = get_training_data(distance) # loads data
 while True: # continuous running
-    angle = get_input() # gets user input
-    distance = get_distance(angle, data) # calculates distance given angle
-    print('\nDistance at an angle of ' + str(angle) + ' is: ' + str(distance), end = '\n\n') # outputs distance
+    pass
+    #angle = get_input() # gets user input
+    #distance = get_distance(angle, data) # calculates distance given angle
+    #print('\nDistance at an angle of ' + str(angle) + ' is: ' + str(distance), end = '\n\n') # outputs distance
