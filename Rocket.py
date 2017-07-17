@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt # conda install matplotlib
 
 def get_data(_step):
     angles = range(-40, 81, _step) # gets list of angles
-    distance = [65.3333, 99.6666, 130.0, 175.3333, 383.6666, 446.3333, 642.6666, 716.6666, 717.6666, 706.3333, 626.0, 636.3333, 365.3333, 0.0][::_step / 10] # gets list of distances given angle freq
+    distance = [65.3333, 99.6666, 130.0, 175.3333, 383.6666, 446.3333, 642.6666, 716.6666, 717.6666, 706.3333, 626.0, 636.3333, 365.3333, 31.6666][::_step / 10] # gets list of distances given angle freq
     data = [] # empty list for data points
     data.append(angles) # adds angles
     data.append(distance) # adds distances
