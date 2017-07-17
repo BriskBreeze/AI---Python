@@ -2,36 +2,42 @@ from __future__ import print_function
 import numpy as np
 import matplotlib.pyplot as plt # conda install matplotlib
 
-myRange = np.random.rand(10000000)
-mySum = 0
+def get_data(_step):
+    angles = range(-40, 81, _step)
+    distance = [65.3333, 99.6666, 130.0, 175.3333, 383.6666, 446.3333, 642.6666, 716.6666, 717.6666, 706.3333, 626.0, 636.3333, 365.3333, 0.0][::_step / 10]
+    data = []
+    data.append(angles)
+    data.append(distance)
+    return data
 
-#for number in myRange:
-#    mysum += number
+def get_distance(_angle, _data):
+    result = np.polyfit(_data[0], _data[1], 6)
+    eq = np.poly1d(result)
 
-mySum = myRange.sum()
+    x2 = np.arange(-40, 90)
+    yfit = np.polyval(result, x2)
+    plt.plot(_data[0], _data[1], label = "Points")
+    plt.plot(x2, yfit, label = "Fir")
+    plt.savefig("Rocket Prediction.png")
 
-print(mySum)
+    return eq(_angle)
 
-x = [1, 2, 4, 8]
-y = [10, 40, 80, 20]
+def get_input():
+    input = ""
+    while True:  # get input
+        input = raw_input("Please enter an angle (q to quit): ")
+        try:
+            angle = float(input)
+            return angle
+            break
+        except ValueError:
+            if input == 'q':
+                exit(0)
+            else:
+                print("I'm sorry, you have entered an invalid angle.")
 
-result = np.polyfit(x, y, 2)
-eq = np.poly1d(result)
-
-x2 = np.arange(-40, 90)
-yfit = np.polyval(result, x2)
-
-#print(yfit)
-
-plt.plot(x, y, label = "Points")
-plt.plot(x2, yfit, label = "Fit")
-plt.savefig('example.png')
-
-myString = '60.5'
-
-number = 0
-try:
-    number = float(myString)
-except ValueError:
-    print('Not a float')
-print(number)
+while True: # continuous running
+    data = get_data(20)
+    angle = get_input()
+    distance = get_distance(angle, data)
+    print('\nDistance at an angle of ' + str(angle) + ' is: ' + str(distance), end = '\n\n')
