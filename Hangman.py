@@ -40,18 +40,17 @@ def draw_gallows(stage):
 
 def draw_word(word, guessed): # displays the word and blank underneath the gallows
     finished = True # default flag
-    winnum = 0
     for letter in word:
         if letter in guessed: # goes through each letter and checks to see if its in the guessed list.  if so, display letter, if not, an underscore
-            print(letter, end = " ")
+            pass
+            # print(letter, end = " ")
         else:
-            print("_", end = " ") # if you didn't finish the word, set finished to False
+            #print("_", end = " ") # if you didn't finish the word, set finished to False
             finished = False
     if finished:
-        print("\nYou Win!") # win message
-        winnum = 1
-    print()
-    return winnum
+        print("You Win!") # win message
+        return 1
+    return 0
 
 def draw_guessed(guessed): # displays guessed characters
     print("Guessed: ", end = "")
@@ -66,8 +65,8 @@ def change_letter(word, character, index): # replace letter in string given pare
     return ''.join(new_word)
 
 def display(stage, word, guessed): # runs all draw methods
-    draw_guessed(guessed)
-    draw_gallows(stage)
+    # draw_guessed(guessed)
+    # draw_gallows(stage)
     return draw_word(word, guessed)
 
 def player_move(guessed): # input from a human
@@ -79,7 +78,7 @@ def player_move(guessed): # input from a human
 def AI_move(lcl_guessed, word, ngram_count, training_set): # gets result form the AI
     sorted_dict = sorted(ngram_count.items(), key=lambda x:x[1])[::-1]
     if len(lcl_guessed) == 0 or len(word) == 1:
-        print(sorted(AI_train(training_set, 1))[0])
+        #print(sorted(AI_train(training_set, 1))[0])
         return sorted(AI_train(training_set, 1))[0]
     left_letter = ""
     right_letter = ""
@@ -163,7 +162,9 @@ def filter(guess): # filters out words of the training data to make a better gue
 win = 0.0
 loss = 0.0
 
-for i in xrange(100):
+for i in xrange(9999):
+    won = False
+
     numpy.random.shuffle(words)  # shuffles the list
     # word = words[0] # sets word to first word in words
     stage = 0  # full lives
@@ -173,7 +174,10 @@ for i in xrange(100):
     training_set = words[::10]  # gets every tenth word
     ngram_count = AI_train(training_set, 2)
     while stage < 6:  # you get 6 lives
-        win += display(stage, word, guessed)  # refreshes the screen
+        if display(stage, word, guessed) == 1:
+            win += 1
+            won = True
+            break
         # guess = player_move(guessed) # user guess
         guess = AI_move(guessed, word, ngram_count, training_set)  # AI guess
         if guess not in word and guess not in guessed:  # if wrong, go up in stage
@@ -181,8 +185,9 @@ for i in xrange(100):
             filter(guess)
         guessed.append(guess.lower())  # adds guess to guess list
 
-    win += display(stage, word, guessed)  # refreshes the screen
-    print("Game Over!")  # game over message
+    if not won:
+        display(stage, word, guessed)  # refreshes the screen
+        print("Game Over!")  # game over message
+        loss += 1
     print("Your word was: " + word)
-    loss+=1
-print(float(win) / ((float(loss) + float(win))))
+    print(float(win) / ((float(loss) + float(win))))
