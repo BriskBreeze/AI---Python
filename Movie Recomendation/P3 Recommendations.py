@@ -5,6 +5,18 @@ import numpy as np
 # These functions will be used in Phase 3 (skip for now)
 ########################################################
 
+def get_input():
+    while True:  # get input
+        input = raw_input("Please enter a movie (q to stop): ") # gets text input
+        try:
+            return int(input) # tries parsing to a int
+        except ValueError:
+            if input == 'q':
+                return None
+            else:
+                print("I'm sorry, you have entered an invalid movie.")
+
+
 def findSimilar(iLikeNp, userLikes):
     # Create an And similarity
     similarityAnd = 0 # TODO replace 0 with the correct code
@@ -64,23 +76,17 @@ def processLikes(iLike):
 
 # Load Data
 # Load the movie names data (u.item) with just columns 0 and 1 (id and name)
-# id is np.int, name is S128
-movieNames = 0 # TODO replace 0 with the correct cod eto load the movie data
+movieNames = np.loadtxt(fname= './ml-100k/u.item', delimiter='|', usecols= (0,1), dtype= {'names': ('id', 'name'), 'formats': (np.int, 'S128')})
 
 # Create a dictionary with the ids as keys and the names as the values
-# Google search for "python merge lists into dictionary"
-# Second Result: https://stackoverflow.com/a/26269307/3854385
-movieDict = 0 # TODO replace 0 with the code to make the dict
-
+movieDict = {k:v for k, v in movieNames}
 
 # Load the movie Data (u.data) with just columns 0, 1, and 2 (userID, movieID, rating) all are np.int
-movieData = 0 # TODO replace 0 with the correct cod eto load the movie data
+movieData = np.loadtxt(fname='./ml-100k/u.data', usecols=(0,1,2), dtype={'names': ('userID', 'movieID', 'rating'), 'formats': (np.int, np.int, np.int)})
 
 print(movieData)
 print(movieNames)
 print(movieDict)
-
-exit(0) # Delete this after we finish phase 1, for now just get the data loaded
 
 ########################################################
 # Begin Phase 2
@@ -90,19 +96,27 @@ exit(0) # Delete this after we finish phase 1, for now just get the data loaded
 # This is non-ideal, pandas, scipy, or graphlib should be used here
 
 # Create a dictionary to hold our temporary ratings
-movieRatingTemp = 0 # TODO replace 0 with code for an empty dictionary
+movieRatingTemp = {}
 
 # TODO For every row in the movie data, add the rating to a list in the dictionary entry
 # for that movies ID (don't forget to initialize the dictionary entry)
 
+for review in movieData:
+    key = movieNames[review['movieID'] - 1][1]
+    if key not in movieRatingTemp:
+        movieRatingTemp[key] = []
+    movieRatingTemp[key].append(review['rating'])
 
 # Create an empty dictionary for movieRating and movieRatingCount
-movieRating = 0 # TODO replace 0 with code for an empty dictionary
-movieRatingCount = 0 # TODO replace 0 with code for an empty dictionary
+movieRating = {}
+movieRatingCount = {}
 
 # TODO Using numpy place the average rating for each movie in movieRating and the total number of ratings in movieRatingCount
 # Note: You will need a for loop to get each dictionary key
 
+for key in movieRatingTemp:
+    movieRating[key] = np.mean(movieRatingTemp[key])
+    movieRatingCount[key] = len(movieRatingTemp[key])
 
 # Get sorting ratings
 # https://www.saltycrane.com/blog/2007/09/how-to-sort-python-dictionary-by-keys/
@@ -114,6 +128,8 @@ print("Top Ten Movies:")
 # It should print the number, title, id, rating and count of reviews for each movie
 # ie 2. Someone Else's America (1995) (ID: 1599) Rating: 5.0 Count: 1
 
+for i in xrange(10):
+    pass
 
 # Top 10 Movies with at least 100 ratings    
 print("\n\nTop Ten movies with at least 100 ratings:")
@@ -168,10 +184,19 @@ processLikes(iLike)
 iLike = [79,  96,  98, 168, 173, 176,194, 318, 357, 427, 603, 1]
 processLikes(iLike)
 
+
+ilike = []
+while True:
+    movie = get_input()
+    if movie == None:
+        break
+    else:
+        iLike.append(movie)
+processLikes(iLike)
+
 # TODO If your code completes the above recommendations properly, you're ready for the last part,
 # allow the user to select any number of movies that they like and then give them recommendations.
 # Note: I recommend having them select movies by ID since the titles are really long.
 # You can just assume they have a list of movies somewhere so they already know what numbers to type in.
 # If you'd like to give them options though, that would be a cool bonus project if you finish early.
 
-        
