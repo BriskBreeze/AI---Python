@@ -6,10 +6,6 @@ apiUrl = 'http://api.wordnik.com/v4'
 apiKey = 'YOUR API KEY HERE'
 client = swagger.ApiClient(apiKey, apiUrl)"""
 
-f = open("words_alpha.txt")
-#f = open("20k.txt")
-words = f.read().lower().splitlines() # splits the file into words and loads them into a list
-
 def draw_gallows(stage):
     gallows = [ # the template of the gallows
         "____________",
@@ -77,7 +73,6 @@ def player_move(guessed): # input from a human
 def AI_move(lcl_guessed, word, ngram_count, training_set): # gets result form the AI
     sorted_dict = sorted(ngram_count.items(), key=lambda x:x[1])[::-1]
     if len(lcl_guessed) == 0 or len(word) == 1:
-        #print(sorted(AI_train(training_set, 1))[0])
         return sorted(AI_train(training_set, 1))[0]
     left_letter = ""
     right_letter = ""
@@ -158,19 +153,26 @@ def filter(guess): # filters out words of the training data to make a better gue
         if guess in key:
             ngram_count.pop(key)
 
+f = open("words_alpha.txt")
+#f = open("20k.txt")
+words = f.read().lower().splitlines()  # splits the file into words and loads them into a list
+numpy.random.shuffle(words)  # shuffles the list
+training_set = words[::10]  # gets every tenth word
+
 win = 0.0
 loss = 0.0
 
-for i in xrange(9999):
+for i in xrange(1):
     won = False
 
-    numpy.random.shuffle(words)  # shuffles the list
     # word = words[0] # sets word to first word in words
     stage = 0  # full lives
     guessed = []  # empty guess list
+
+    words = ['Jeffrey', 'Sarah', 'Jorge', 'Tanya', 'Moira', 'Thomas', 'Jungwoo', 'Jordan', 'Joy', 'Anabelle', 'Judson', 'Spencer', 'Avina', 'Yovel', 'Loren', 'Jake', 'Rohit', 'Ron', 'Scott', 'Pryia', 'Tajas', 'Elliot']
+    numpy.random.shuffle(words)  # shuffles the list
     word = words[0]
 
-    training_set = words[::10]  # gets every tenth word
     ngram_count = AI_train(training_set, 2)
     while stage < 6:  # you get 6 lives
         if display(stage, word, guessed) == 1:
