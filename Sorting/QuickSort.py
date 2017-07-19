@@ -22,7 +22,7 @@ def partition(_A, _p, _r):
     return i+1
 
 #while True:
-rand_arr = np.random.randint(1000, 10000, 10)
+rand_arr = np.random.randint(1000, 10000, 5)
 print('Unsorted: ' + str(rand_arr) + '\n')
 quickSort(rand_arr, 0, len(rand_arr) - 1)
 print('Sorted: ' + str(rand_arr))
