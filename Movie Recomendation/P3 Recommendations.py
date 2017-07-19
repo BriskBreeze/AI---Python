@@ -17,24 +17,45 @@ def get_input():
                 print("I'm sorry, you have entered an invalid movie.")
 
 
-def shifting(bitlist):
-     out = 0
-     for bit in bitlist:
-         out = (out << 1) | bit
-     return out
+def bitlist_to_int(bitlist):
+    return int(''.join('01'[i] for i in bitlist), 2)
+
 def findSimilar(iLikeNp, userLikes):
-    for user in userLikes:
+    max = 0
+    maxIndex = 0
+    for i in xrange(len(userLikes)):
+        if 1 not in userLikes[i] or 1 not in iLikeNp:
+            continue
+        samemovies = True
+        for j in xrange(len(userLikes[i])):
+            if userLikes[i][j] == 1 and iLikeNp[j] == 0:
+                samemovies = False
+
+        if samemovies:
+            continue
         # Create an And similarity
-        similarityAnd = shifting(iLikeNp) & shifting(user)  # TODO replace 0 with the correct code
+        similarityAnd = iLikeNp * userLikes[i]  # TODO replace 0 with the correct code
         # Create a per user sum (this is the numerator of the jaccard index)
-        similarityAndSum = similarityAnd  # TODO replace 0 with the correct code
+        similarityAndSum = 0.0  # TODO replace 0 with the correct code
+        for like in similarityAnd:
+            if like == 1:
+                similarityAndSum += 1
+
         # Create an Or similarity
-        userSimilarityOr = shifting(iLikeNp) | shifting(user)  # TODO replace 0 with the correct code
+        userSimilarityOr = iLikeNp + userLikes[i] # TODO replace 0 with the correct code
         # Create a per user union sum (this is the denominator of the jaccard index)
-        similarityOrSum = userSimilarityOr  # TODO replace 0 with the correct code
+        similarityOrSum = 0.0  # TODO replace 0 with the correct code
+        for like in userSimilarityOr:
+            if like != 0:
+                similarityOrSum += 1
 
         # Calculate the similarity
-        userSimilarity = similarityAnd / similarityOrSum  # TODO replace 0 with the correct code to calculate the Jaccard Index for each user
+
+        userSimilarity = similarityAndSum / similarityOrSum  # TODO replace 0 with the correct code to calculate the Jaccard Index for each user
+
+        if userSimilarity > max and userSimilarity != 1:
+            max = userSimilarity
+            maxIndex = i
         # Make the most similar user has a new like that the previous user did not have
         # I used a while loop.
         # You can "get rid" of a user that is most similar, but doesn't have any new likes
@@ -43,10 +64,8 @@ def findSimilar(iLikeNp, userLikes):
         # TODO Write the loop
 
         # TODO Print the max similarity number (most times this is something like 0.17
-        print(userSimilarity)
 
         # Return the index of the user which is the best match
-    exit(0)
     return maxIndex
     
 def printMovie(id):
@@ -58,7 +77,6 @@ def processLikes(iLike):
     print("\n\nSince you like:")
     
     # Hint: Use a for loop and the printMovie function.
-
 
     # Convert iLike into an array of 0's and 1's which matches the array for other users
     # It should have one column for each movie (just like the userLikes array)
@@ -75,8 +93,10 @@ def processLikes(iLike):
     print("\nYou might like: ")
     # Find the indexes of the values that are ones
     # https://stackoverflow.com/a/17568803/3854385 (Note: You don't want it to be a list, but you do want to flatten it.)
-    recLikes = 0 # TODO replace 0 with the needed code
-
+    recLikes = np.argwhere(userLikes[user] == 1) # TODO replace 0 with the needed code
+    for movie in recLikes:
+        if movie not in iLike:
+            printMovie(movie[0])
     # For each item the similar user likes that the person didn't already say they liked
     # print the movie name using printMovie (you'll also need a for loop and an if statement)
     # TODO Print the movies
@@ -155,6 +175,8 @@ for i in xrange(10):
 # Top 10 Movies with at least 100 ratings    
 print("\n\nTop Ten movies with at least 100 ratings:")
 
+
+
 # The number should be the movie's absolute rank
 # ie (16. Close Shave, A (1995) (ID: 408) Rating: 4.49 Count: 112)
 # Number 16 is first in this list because it's the first movie with over 100 ratings
@@ -181,10 +203,8 @@ while count < 10:
 
 # Find the max movie ID + 1
 maxMovie = np.max(movieData['movieID']) + 1
-print(maxMovie)
 # Find the max user Id + 1
 maxUser = np.max(movieData['userID']) + 1
-print(maxUser)
 # Create an array of 0s which will fill in with 1s when a user likes a movie
 userLikes = np.zeros((maxUser, maxMovie),
                      dtype=np.int)
