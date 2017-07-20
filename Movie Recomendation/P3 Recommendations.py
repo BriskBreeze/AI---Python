@@ -36,18 +36,12 @@ def findSimilar(iLikeNp, userLikes):
         # Create an And similarity
         similarityAnd = iLikeNp * userLikes[i]  # TODO replace 0 with the correct code
         # Create a per user sum (this is the numerator of the jaccard index)
-        similarityAndSum = 0.0  # TODO replace 0 with the correct code
-        for like in similarityAnd:
-            if like == 1:
-                similarityAndSum += 1
+        similarityAndSum = similarityAnd.sum()  # TODO replace 0 with the correct code
 
         # Create an Or similarity
         userSimilarityOr = iLikeNp + userLikes[i] # TODO replace 0 with the correct code
         # Create a per user union sum (this is the denominator of the jaccard index)
-        similarityOrSum = 0.0  # TODO replace 0 with the correct code
-        for like in userSimilarityOr:
-            if like != 0:
-                similarityOrSum += 1
+        similarityOrSum = userSimilarityOr.sum()  # TODO replace 0 with the correct code
 
         # Calculate the similarity
 
