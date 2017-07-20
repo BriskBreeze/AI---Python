@@ -39,7 +39,7 @@ def findSimilar(iLikeNp, userLikes):
         similarityAndSum = similarityAnd.sum()  # TODO replace 0 with the correct code
 
         # Create an Or similarity
-        userSimilarityOr = iLikeNp + userLikes[i] # TODO replace 0 with the correct code
+        userSimilarityOr = (iLikeNp + userLikes[i]) - similarityAnd # TODO replace 0 with the correct code
         # Create a per user union sum (this is the denominator of the jaccard index)
         similarityOrSum = userSimilarityOr.sum()  # TODO replace 0 with the correct code
 
@@ -88,6 +88,7 @@ def processLikes(iLike):
     # Find the indexes of the values that are ones
     # https://stackoverflow.com/a/17568803/3854385 (Note: You don't want it to be a list, but you do want to flatten it.)
     recLikes = np.argwhere(userLikes[user] == 1) # TODO replace 0 with the needed code
+    print(recLikes)
     for movie in recLikes:
         if movie not in iLike:
             printMovie(movie[0])
