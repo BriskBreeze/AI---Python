@@ -10,30 +10,6 @@ def get_training_data(_distance):
     data.append(dist) # adds distances
     return data
 
-def run_test(_test_data, _training_data, _data):
-    training_angles = range(-40, 81, 20)
-    training_results = [[]]
-    training_results.append(_training_data)
-    for i in xrange(len(_training_data)):
-        training_results[0].append(get_distance(training_angles[i], _data))
-    #print(training_results)
-    print("The RMSD of the training data: " + str(RMSD(training_results)))
-
-    test_angles = range(-30, 71, 20)
-    test_results = [[]]
-    test_results.append(_test_data)
-    for i in xrange(len(_test_data) - 1):
-        test_results[0].append(get_distance(test_angles[i], _data))
-    #print(test_results)
-    print("The RMSD of the test data (without 90): " + str(RMSD(test_results)))
-
-    test_angles90 = range(-30, 91, 20)
-    test_results90 = [[]]
-    test_results90.append(_test_data)
-    for i in xrange(len(_test_data)):
-        test_results90[0].append(get_distance(test_angles90[i], _data))
-    #print(test_results90)
-    print("The RMSD of the test data (with 90): " + str(RMSD(test_results90)))
 
 def get_distance(_angle, _data):
     result = np.polyfit(_data[0], _data[1], 6) # makes poly data
@@ -75,6 +51,31 @@ def RMSD(_test_set):
 
 def AE(_n1, _n2):
     return abs(_n1 - _n2)
+
+def run_test(_test_data, _training_data, _data):
+    training_angles = range(-40, 81, 20)
+    training_results = [[]]
+    training_results.append(_training_data)
+    for i in xrange(len(_training_data)):
+        training_results[0].append(get_distance(training_angles[i], _data))
+    #print(training_results)
+    print("The RMSD of the training data: " + str(RMSD(training_results)))
+
+    test_angles = range(-30, 71, 20)
+    test_results = [[]]
+    test_results.append(_test_data)
+    for i in xrange(len(_test_data) - 1):
+        test_results[0].append(get_distance(test_angles[i], _data))
+    #print(test_results)
+    print("The RMSD of the test data (without 90): " + str(RMSD(test_results)))
+
+    test_angles90 = range(-30, 91, 20)
+    test_results90 = [[]]
+    test_results90.append(_test_data)
+    for i in xrange(len(_test_data)):
+        test_results90[0].append(get_distance(test_angles90[i], _data))
+    #print(test_results90)
+    print("The RMSD of the test data (with 90): " + str(RMSD(test_results90)))
 
 distance = [65.3333, 99.6666, 130.0, 175.3333, 383.6666, 446.3333, 642.6666, 716.6666, 717.6666, 706.3333, 626.0, 536.3333, 365.3333, 31.6666]
 test_data = distance[1::2]
