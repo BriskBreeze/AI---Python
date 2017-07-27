@@ -8,7 +8,7 @@ import activation_functions
 rand = random
 import random
 
-INPUT_COUNT = 6  # Global number of inputs
+INPUT_COUNT = 256  # Global number of inputs
 OUTPUT_COUNT = 1  # Global number of outputs
 MAX_SEX_MULTIPLIER = 4  # Maximum number of times a species can have sex, multiplied by generation number
 MIN_SEX_MULTIPLIER = 2  # Minimum sex
@@ -317,8 +317,8 @@ class Connection:
         self.bias = bias
     def randomize_weight(self):
         """Randomizes the connection's weight with a value -2 to 2"""
-        self.weight = rand_floats(-.01, .01)
-        print(self.weight)
+        self.weight = 1 # rand_floats(-2, 2)
+        #print(self.weight)
     def enable(self):
         """Enables"""
         self.enabled = 1
@@ -331,7 +331,7 @@ class Connection:
     def get_value(self):
         """Gets output"""
         output = self.weight * self.node1.output() * self.enabled + self.bias
-        print(output)
+        print("Output: ", output)
         return output
 
 
