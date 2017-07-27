@@ -162,8 +162,7 @@ class Snake:
         self.outputs = self.brain.feed_forward(self.inputs)
         
         output = round(sort(self.outputs)[0], 1)
-        print(self.outputs)
-        print(output)
+        print("Final Output: ", output)
         new_direction = (self.direction + output) % 4
         
         if new_direction == 2: # Down

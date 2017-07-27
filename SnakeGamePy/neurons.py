@@ -297,7 +297,7 @@ class Node:
         self.t_input = sum(self.inputs)
         #for c in self.connections:
         #    print(c.weight)
-        #print(self.inputs)
+        print("Inputs: ", self.inputs)
         return self.t_input
     def output(self):
         """Gives activated output of inputs"""
@@ -318,7 +318,7 @@ class Connection:
     def randomize_weight(self):
         """Randomizes the connection's weight with a value -2 to 2"""
         self.weight = 1 # rand_floats(-2, 2)
-        #print(self.weight)
+        print("Weight: ", self.weight)
     def enable(self):
         """Enables"""
         self.enabled = 1
